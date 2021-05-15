@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Data Ingest Form</h2>
+
+<form action="{% url 'ingest' %}" method="POST">
+  {% csrf_token %}
+  <label for="folder_path">Folder path</label><br>
+  <input type="text" id="folder_path" name="folder_path" value="/../data">
+  <br><br>
+  <input type="submit" value="Submit">
+</form>
+
+<p>If you click the "Submit" button, the data in the corresponding folder will be ingested to database.</p>
+
+{% for filename, status in ingestion_status.items %}
+  <p {% if status == 'success' %}style="color:green"{% else %}style="color:red"; {% endif %}>{{status}} : {{filename}}</p>
+{% endfor %}
+</body>
+</html>
