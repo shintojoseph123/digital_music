@@ -74,9 +74,8 @@ class Resource(models.Model):
     isrc            = models.CharField(max_length=256, null=True, blank=True)
     title           = models.CharField(max_length=256, null=True, blank=True)
     artists         = models.CharField(max_length=256, null=True, blank=True)
-    dsr             = models.ForeignKey(
+    dsr             = models.ManyToManyField(
                         to           = DSR,
-                        on_delete    = models.CASCADE,
                         related_name = "resource"
                         )
     class Meta:

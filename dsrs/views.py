@@ -8,6 +8,7 @@ from tablib import Dataset
 from datetime import datetime
 # django imports
 from django.shortcuts import render
+import django.core.serializers as django_serializer
 # django rest imports
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -113,9 +114,6 @@ class ResourceViewSet(viewsets.ModelViewSet):
             list: returns the unique resources by revenue
               that accounts Percentile of the total revenue.
         '''
-
-        # from IPython import embed
-        # embed()
         # percentile query
         query = '''
                 WITH
@@ -135,16 +133,10 @@ class ResourceViewSet(viewsets.ModelViewSet):
                 '''% (1- number/100)
 
         # execute raw query
-        query_obj = models.Resource.objects.raw(query)
-
-        for each in query_obj:
-            # print (each.id)
-            print (each.percentile_rank)
-            # print (each.revenue)
-            # break
-
-        message = {"message":"Data deleted successfully!"}
-        return Response(message, status=status.HTTP_204_NO_CONTENT)
+        query_set = models.Resource.objects.raw(query)
+        data = serializers.JSONSerializer().serialize(query_set)
+        data = json.loads(data)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 

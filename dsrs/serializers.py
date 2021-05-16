@@ -1,5 +1,14 @@
+# django imports
+from django.core.serializers.json import Serializer
+# REST imprts
 from rest_framework import serializers
+# file import
 from dsrs import models
+
+
+class JSONSerializer(Serializer):
+    def get_dump_object(self, obj):
+        return self._current
 
 
 class TerritorySerializer(serializers.ModelSerializer):
@@ -66,7 +75,7 @@ class DSRSerializer(serializers.ModelSerializer):
 
 class ResourceSerializer(serializers.ModelSerializer):
     # initialize DSR serializer
-    dsr = DSRSerializer()
+    dsr = DSRSerializer(many=True)
 
     def create(self, validated_data):
         '''
