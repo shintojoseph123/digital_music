@@ -28,8 +28,8 @@ Deliverables:
 * Dockerfile
   ```bash
    docker build -t digital:v0 .
-   docker run -it -p 8001:8000 digital:v0
-   http://localhost:8001/
+   docker run -it -p 8000:8000 digital:v0
+   http://localhost:8000/
    ```
 
 Extra questions:
