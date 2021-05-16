@@ -1,6 +1,6 @@
 # django imports
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
+
 
 class Territory(models.Model):
     name            = models.CharField(max_length=48, default='Spain')

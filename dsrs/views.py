@@ -1,14 +1,4 @@
-# django rest imports
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-# file imports
-from dsrs import models, serializers
-# from rest_framework.decorators import action
-from rest_framework.decorators import api_view
-
-# django imports
-from django.shortcuts import render
-
+# lib imports
 import os
 import json
 import pycountry
@@ -16,16 +6,27 @@ import pandas as pd
 from pathlib import Path
 from tablib import Dataset
 from datetime import datetime
-from dsrs.models import Resource
+# django imports
+from django.shortcuts import render
+# django rest imports
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+# file imports
+from dsrs import models, serializers
 from dsrs.resources import ResourceResource
 
 
 def ingest(request):
+    # initialize a dict
     context=dict()
+    # if POST method
     if request.method == 'POST':
+        # get folder path
         folder_path = request.POST['folder_path']
-
+        # initialize Dataset
         dataset = Dataset()
+        # initialize ResourceResource
         resource_resource = ResourceResource()
         # intitialize DSR serializer
         dsr = serializers.DSRSerializer()
@@ -90,18 +91,32 @@ def ingest(request):
             ingestion_status[file_name] = message
         # ingestion_status
         context['ingestion_status'] = ingestion_status
+    # return rendered html page
     return render(request, "ingest.html", context)
 
 
 
 class ResourceViewSet(viewsets.ModelViewSet):
+    # queryset
     queryset = models.Resource.objects.all()
+    # serializer
     serializer_class = serializers.ResourceSerializer
 
     def percentile(self, request, number):
+        '''
+        Calculates TOP percentile by revenue
+
+        Parameters:
+            number (str)    : The Percentile.
+
+        Returns:
+            list: returns the unique resources by revenue
+              that accounts Percentile of the total revenue.
+        '''
+
         # from IPython import embed
         # embed()
-
+        # percentile query
         query = '''
                 WITH
                     Percentiles AS (SELECT
@@ -119,18 +134,14 @@ class ResourceViewSet(viewsets.ModelViewSet):
                    percentile_rank DESC;
                 '''% (1- number/100)
 
+        # execute raw query
         query_obj = models.Resource.objects.raw(query)
 
-        print (query_obj.query)
         for each in query_obj:
             # print (each.id)
             print (each.percentile_rank)
             # print (each.revenue)
             # break
-
-        # This resource returns the TOP percentile by revenue (inverse of percentile).
-        # For example, "top percentile 10" returns the unique resources by revenue
-        # that accounts 10% of the total revenue.
 
         message = {"message":"Data deleted successfully!"}
         return Response(message, status=status.HTTP_204_NO_CONTENT)

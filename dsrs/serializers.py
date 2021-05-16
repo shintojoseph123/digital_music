@@ -21,21 +21,29 @@ class CurrencySerializer(serializers.ModelSerializer):
 
 
 class DSRSerializer(serializers.ModelSerializer):
+    # initialize teritory serializer
     territory = TerritorySerializer()
+    # initialize teritory serializer
     currency = CurrencySerializer()
 
     def create(self, validated_data):
-
+        '''
+        custom create function
+        '''
+        # get the currency inputs
         currency_data = validated_data.pop("currency")
+        # get the territory inputs
         territory_data = validated_data.pop("territory")
-
+        # create currency if not exists
         currency_obj, created = models.Currency.objects.get_or_create(
                                     **currency_data
                                     )
+        # create territory if not exists
         territory_obj, created = models.Territory.objects.get_or_create(
                                     local_currency=currency_obj,
                                     **territory_data
                                     )
+        # create DSR if not exists
         dsr_obj, created = models.DSR.objects.get_or_create(
                                 currency    = currency_obj,
                                 territory   = territory_obj,
@@ -57,42 +65,21 @@ class DSRSerializer(serializers.ModelSerializer):
 
 
 class ResourceSerializer(serializers.ModelSerializer):
+    # initialize DSR serializer
     dsr = DSRSerializer()
 
     def create(self, validated_data):
-
-
-        # dsr = DSRSerializer()
-
-        dsr_data = validated_data.pop('dsr')
-        # create a DSR object
-        # dsr_obj = dsr.create(dsr_data)
-
-        # models.DSR.objects.filter(
-        #                 id = dsr_obj.id,
-        #                 )
-        #
-        # models.Resource.objects.filter(
-        #                 dsr__id = dsr_obj.id,
-        #                 )
-
-
+        '''
+        custom create function
+        '''
+        # get the dsr id
+        dsr_id = validated_data.pop('dsr')
+        # create a resource object
         resource_obj = models.Resource.objects.create(
-                        dsr_id = dsr_data,
+                        dsr_id = dsr_id,
                         **validated_data
                         )
-
-        # resource_obj = models.Resource.objects.create(
-        #                 dsr_id = dsr_obj.id,
-        #                 **validated_data
-        #                 )
-
-        # resource_obj = models.Resource.objects.create(
-        #                 dsr = dsr_obj,
-        #                 **validated_data
-        #                 )
         return resource_obj
-
 
     class Meta:
         model = models.Resource

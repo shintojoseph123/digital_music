@@ -7,16 +7,16 @@ from dsrs import views
 
 # select the router
 router = routers.DefaultRouter()
-# register the urls and viewset
+# register the DSRViewSet and urls
 router.register('dsrs', views.DSRViewSet)
+# register the ResourceViewSet and urls
 router.register('resources', views.ResourceViewSet)
-
 
 urlpatterns = [
     # include router urls
     path('', include(router.urls)),
-    # resource percentile url
-    path('resources/percentile/<int:number>/', views.ResourceViewSet.as_view({"get": "percentile"})),
     # ingest data to database
     path('ingest/', views.ingest, name="ingest"),
+    # GET: resource percentile url
+    path('resources/percentile/<int:number>/', views.ResourceViewSet.as_view({"get": "percentile"})),
 ]
